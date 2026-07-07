@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/* ===================================
+   OCEAN BACKGROUND
+=================================== */
+
+.wave {
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  height: 260px;
+  border-radius: 45%;
+  opacity: 0.25;
+  filter: blur(35px);
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+.wave-one {
+  top: 10%;
+  background: rgba(125, 211, 252, 0.35);
+}
+
+.wave-two {
+  top: 40%;
+  background: rgba(103, 232, 249, 0.25);
+  animation-duration: 24s;
+}
+
+.wave-three {
+  top: 70%;
+  background: rgba(186, 230, 253, 0.30);
+  animation-duration: 30s;
+}
+
+@keyframes drift {
+  from {
+    transform: translateX(-4%) translateY(0);
+  }
+
+  to {
+    transform: translateX(4%) translateY(-12px);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,58 @@
+const stories = [
+  {
+    id: 1,
+    title: "Crocodile Tears",
+    genre: "Drama • Romance",
+    chapters: 2,
+    readers: null,
+    createdAt: new Date("2026-06-20T10:00:00Z"),
+    cover: "from-pink-500 to-rose-500",
+  },
+  {
+    id: 2,
+    title: "The Last Candle",
+    genre: "Inspirational",
+    chapters: 12,
+    readers: 8,
+    createdAt: new Date("2026-06-24T09:30:00Z"),
+    cover: "from-yellow-400 to-orange-500",
+  },
+  {
+    id: 3,
+    title: "Beyond Tomorrow",
+    genre: "Adventure",
+    chapters: 24,
+    readers: 25,
+    createdAt: new Date("2026-06-26T14:15:00Z"),
+    cover: "from-sky-500 to-blue-600",
+  },
+  {
+    id: 4,
+    title: "Silent Echo",
+    genre: "Mystery",
+    chapters: 15,
+    readers: null,
+    createdAt: new Date("2026-06-22T18:00:00Z"),
+    cover: "from-gray-700 to-gray-900",
+  },
+  {
+    id: 5,
+    title: "Broken Crown",
+    genre: "Fantasy",
+    chapters: 31,
+    readers: 41,
+    createdAt: new Date("2026-06-25T11:45:00Z"),
+    cover: "from-purple-500 to-indigo-600",
+  },
+  {
+    id: 6,
+    title: "Road to Grace",
+    genre: "Faith",
+    chapters: 20,
+    readers: 14,
+    createdAt: new Date("2026-06-23T08:20:00Z"),
+    cover: "from-emerald-500 to-teal-600",
+  },
+];
+
+export default stories;
