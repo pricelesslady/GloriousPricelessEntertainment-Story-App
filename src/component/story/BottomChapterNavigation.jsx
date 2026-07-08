@@ -104,30 +104,30 @@ const BottomChapterNavigation = ({
           </button>
         </div>
       ) : (
-        <div className="mt-8 flex items-center justify-between gap-4 pb-2">
+       <div className="mt-8 flex items-center justify-between gap-2 pb-2 sm:gap-4">
           <button
             onClick={() => onChapterChange(currentChapter - 1)}
-            className="flex items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex w-1/2 items-center justify-center gap-1 rounded-xl px-2 py-3 text-sm font-medium transition-all duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 sm:px-4 sm:text-base"
             style={{
               backgroundColor: currentTheme.sectionBackground,
               color: currentTheme.heading,
             }}
             disabled={currentChapter === 1}
           >
-            <ChevronLeft size={18} />
-            Previous Chapter
+            <ChevronLeft size={16} className="shrink-0 sm:size-[18px]" />
+            <span className="text-center">Previous Chapter</span>
           </button>
 
           <button
             onClick={() => onChapterChange(currentChapter + 1)}
-            className="flex items-center gap-2 rounded-xl px-4 py-2 transition-all duration-300 hover:scale-105"
+            className="flex w-1/2 items-center justify-center gap-1 rounded-xl px-2 py-3 text-sm font-medium transition-all duration-300 hover:scale-105 sm:px-4 sm:text-base"
             style={{
               backgroundColor: currentTheme.primary,
               color: "#ffffff",
             }}
           >
-            Next Chapter
-            <ChevronRight size={18} />
+            <span className="text-center">Next Chapter</span>
+            <ChevronRight size={16} className="shrink-0 sm:size-[18px]" />
           </button>
         </div>
       )}
