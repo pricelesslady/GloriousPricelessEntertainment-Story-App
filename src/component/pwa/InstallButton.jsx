@@ -5,12 +5,11 @@ import IOSInstallModal from "./IOSInstallModal";
 const InstallButton = () => {
   const [showIOSModal, setShowIOSModal] = useState(false);
   const {
-    install,
-    isInstallable,
-    isInstalled,
-    isIOS,
-    isStandalone,
-  } = usePWAInstall();
+  install,
+  isInstallable,
+  isInstalled,
+  isIOS,
+} = usePWAInstall();
 
   const { currentTheme } = useReadingPreferences();
 
@@ -28,12 +27,12 @@ const InstallButton = () => {
     );
   }
 
-  if (!isInstallable) return null;
-
-  return (
+ if (!isInstallable && !isIOS) return null;
+return (
+  <>
     <button
       onClick={() => {
-        if (isIOS && !isStandalone) {
+        if (isIOS) {
           setShowIOSModal(true);
         } else {
           install();
@@ -48,11 +47,14 @@ const InstallButton = () => {
     >
       📲 Install App
     </button>
-  );
+
     <IOSInstallModal
-    open={showIOSModal}
-    onClose={() => setShowIOSModal(false)}
-  />
+      open={showIOSModal}
+      onClose={() => setShowIOSModal(false)}
+    />
+  </>
+);
+   
 };
 
 export default InstallButton;

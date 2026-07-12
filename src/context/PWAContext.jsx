@@ -10,7 +10,9 @@ export const PWAProvider = ({ children }) => {
 
   useEffect(() => {
     // Detect iPhone/iPad
-    const ios = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    const ios =
+  /iphone|ipad|ipod/i.test(window.navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     setIsIOS(ios);
 
     // Detect if app is already installed
