@@ -7,6 +7,7 @@ export const PWAProvider = ({ children }) => {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   const standalone =
     window.navigator.standalone === true ||
     window.matchMedia("(display-mode: standalone)").matches;
