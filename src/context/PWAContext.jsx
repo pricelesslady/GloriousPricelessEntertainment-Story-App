@@ -7,39 +7,25 @@ export const PWAProvider = ({ children }) => {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
-  const standalone =
-    window.navigator.standalone === true ||
-    window.matchMedia("(display-mode: standalone)").matches;
 
-  setIsStandalone(standalone);
-
-  if (standalone) {
-    setIsInstalled(true);
-  }
   useEffect(() => {
+    // Detect iPhone/iPad
+    const ios = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    setIsIOS(ios);
+
+    // Detect if app is already installed
+    const standalone =
+      window.navigator.standalone === true ||
+      window.matchMedia("(display-mode: standalone)").matches;
+
+    if (standalone) {
+      setIsInstalled(true);
+    }
+
     const handleBeforeInstallPrompt = (event) => {
       event.preventDefault();
       setDeferredPrompt(event);
       setIsInstallable(true);
-
-      const ios =
-        /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-
-      setIsIOS(ios);
-
-      const standalone =
-        window.navigator.standalone ||
-        window.matchMedia("(display-mode: standalone)").matches;
-
-      setIsStandalone(standalone);
-
-      if (standalone) {
-        setIsInstalled(true);
-      }
-      if (window.navigator.standalone === true) {
-        setIsInstalled(true);
-      }
     };
 
     const handleInstalled = () => {
@@ -48,26 +34,40 @@ export const PWAProvider = ({ children }) => {
       setIsInstallable(false);
     };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    window.addEventListener("appinstalled", handleInstalled);
+    window.addEventListener(
+      "beforeinstallprompt",
+      handleBeforeInstallPrompt
+    );
 
-    if (window.matchMedia("(display-mode: standalone)").matches) {
-      setIsInstalled(true);
-    }
+    window.addEventListener(
+      "appinstalled",
+      handleInstalled
+    );
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-      window.removeEventListener("appinstalled", handleInstalled);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+
+      window.removeEventListener(
+        "appinstalled",
+        handleInstalled
+      );
     };
   }, []);
 
   const install = async () => {
     if (!deferredPrompt) return;
+
     deferredPrompt.prompt();
+
     const { outcome } = await deferredPrompt.userChoice;
+
     if (outcome === "accepted") {
       setIsInstallable(false);
     }
+
     setDeferredPrompt(null);
   };
 
@@ -78,7 +78,6 @@ export const PWAProvider = ({ children }) => {
         isInstallable,
         isInstalled,
         isIOS,
-        isStandalone,
       }}
     >
       {children}
