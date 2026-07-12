@@ -1,11 +1,15 @@
-import { usePWAInstall } from "../../context/PWAContext"; 
+import { usePWAInstall } from "../../context/PWAContext";
 import { useReadingPreferences } from "../../content/ReadingPreferencesContext";
-
+import { useState } from "react";
+import IOSInstallModal from "./IOSInstallModal";
 const InstallButton = () => {
+  const [showIOSModal, setShowIOSModal] = useState(false);
   const {
     install,
     isInstallable,
     isInstalled,
+    isIOS,
+    isStandalone,
   } = usePWAInstall();
 
   const { currentTheme } = useReadingPreferences();
@@ -28,7 +32,13 @@ const InstallButton = () => {
 
   return (
     <button
-      onClick={install}
+      onClick={() => {
+        if (isIOS && !isStandalone) {
+          setShowIOSModal(true);
+        } else {
+          install();
+        }
+      }}
       className="rounded-full border-2 px-10 py-4 text-lg font-semibold transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
       style={{
         borderColor: currentTheme.primary,
@@ -39,6 +49,10 @@ const InstallButton = () => {
       📲 Install App
     </button>
   );
+    <IOSInstallModal
+    open={showIOSModal}
+    onClose={() => setShowIOSModal(false)}
+  />
 };
 
 export default InstallButton;

@@ -6,12 +6,39 @@ export const PWAProvider = ({ children }) => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const standalone =
+    window.navigator.standalone === true ||
+    window.matchMedia("(display-mode: standalone)").matches;
 
+  setIsStandalone(standalone);
+
+  if (standalone) {
+    setIsInstalled(true);
+  }
   useEffect(() => {
     const handleBeforeInstallPrompt = (event) => {
       event.preventDefault();
       setDeferredPrompt(event);
       setIsInstallable(true);
+
+      const ios =
+        /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+
+      setIsIOS(ios);
+
+      const standalone =
+        window.navigator.standalone ||
+        window.matchMedia("(display-mode: standalone)").matches;
+
+      setIsStandalone(standalone);
+
+      if (standalone) {
+        setIsInstalled(true);
+      }
+      if (window.navigator.standalone === true) {
+        setIsInstalled(true);
+      }
     };
 
     const handleInstalled = () => {
@@ -44,7 +71,15 @@ export const PWAProvider = ({ children }) => {
   };
 
   return (
-    <PWAContext.Provider value={{ install, isInstallable, isInstalled }}>
+    <PWAContext.Provider
+      value={{
+        install,
+        isInstallable,
+        isInstalled,
+        isIOS,
+        isStandalone,
+      }}
+    >
       {children}
     </PWAContext.Provider>
   );
