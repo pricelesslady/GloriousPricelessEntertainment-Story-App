@@ -11,6 +11,10 @@ import { useReadingPreferences } from "../content/ReadingPreferencesContext";
 import LoadingScreen from "../component/common/LoadingScreen";
 import ErrorState from "../component/common/ErrorState";
 import { saveRecentlyRead } from "../utils/recentReading";
+import {
+  saveStoryOffline,
+  getOfflineStory,
+} from "../utils/offlineStories";
 const StoryReader = () => {
   const { displayName } = useReadingPreferences();
   const { slug } = useParams();
@@ -21,8 +25,9 @@ const StoryReader = () => {
   const [story, setStory] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
   const [currentChapter, setCurrentChapter] =
-  useState(initialChapter);
+    useState(initialChapter);
   const [showDisplayNameModal, setShowDisplayNameModal] = useState(false);
   const [showCommentsPanel, setShowCommentsPanel] = useState(false);
 
@@ -39,37 +44,101 @@ const StoryReader = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Fetch Story Details
-        const storyResponse = await fetch(`${import.meta.env.VITE_API_URL}/stories/${slug}`);
+        // 1. Try to fetch the latest story from the internet
+
+        const storyResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/stories/${slug}`
+        );
+
         if (!storyResponse.ok) {
           throw new Error("Story not found.");
         }
+
         const storyData = await storyResponse.json();
-        setStory(storyData);
 
-        // 2. Record Reader View (wrapped in try/catch so failure won't block rendering)
-        try {
-          await fetch(`${import.meta.env.VITE_API_URL}/stories/${storyData.slug}/views`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ readerId: getReaderId() }),
-          });
-        } catch (error) {
-          console.error("Unable to record story view:", error);
-        }
+        // 2. Fetch chapters
 
-        // 3. Fetch Chapters
-        const chapterResponse = await fetch(`${import.meta.env.VITE_API_URL}/chapters/story/${slug}`);
+        const chapterResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/chapters/story/${slug}`
+        );
+
         if (!chapterResponse.ok) {
           throw new Error("Unable to load chapters.");
         }
+
         const chapterData = await chapterResponse.json();
+
+        // 3. Update React state
+
+        setStory(storyData);
         setChapters(chapterData);
+        setIsOfflineMode(false);
+        // 4. Save the story for offline reading
+
+        // 4. Save the story for offline reading
+
+        try {
+          await saveStoryOffline(
+            storyData,
+            chapterData
+          );
+        } catch (error) {
+          console.error(
+            "Unable to save story for offline reading:",
+            error
+          );
+        }
+
+        // 5. Record reader view
+
+        try {
+          await fetch(
+            `${import.meta.env.VITE_API_URL}/stories/${storyData.slug}/views`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                readerId: getReaderId(),
+              }),
+            }
+          );
+        } catch (error) {
+          console.error(
+            "Unable to record story view:",
+            error
+          );
+        }
 
       } catch (error) {
-        console.error(error);
+        console.warn(
+          "Online story fetch failed. Checking offline storage..."
+        );
+
+        try {
+          // Try the locally saved version
+
+          const offlineStory =
+            await getOfflineStory(slug);
+
+          if (offlineStory) {
+            setStory(offlineStory);
+            setChapters(
+              offlineStory.chapters || []
+            );
+            setIsOfflineMode(true);
+          } else {
+            console.error(error);
+          }
+
+        } catch (offlineError) {
+          console.error(
+            "Unable to load offline story:",
+            offlineError
+          );
+        }
+
       } finally {
         setLoading(false);
       }
@@ -135,6 +204,25 @@ const StoryReader = () => {
 
   return (
     <main className="min-h-screen px-5 py-10">
+
+      {isOfflineMode ? (
+        <div className="mx-auto mb-6 max-w-2xl rounded-2xl border px-5 py-4 text-center shadow-sm">
+          <p className="font-semibold">
+            📖 Available offline
+          </p>
+
+          <p className="mt-1 text-sm opacity-80">
+            You're currently offline, but you can continue
+            reading this story from your saved copy.
+          </p>
+        </div>
+      ) : (
+        <div className="mx-auto mb-6 max-w-2xl text-center">
+          <p className="text-sm font-medium">
+            🟢 Now online, enjoy reading.
+          </p>
+        </div>
+      )}
       <StoryHeader story={story} currentChapter={currentChapter} />
 
       <ChapterNavigation
